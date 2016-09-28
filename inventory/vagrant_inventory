@@ -1,0 +1,60 @@
+# file: ./inventory/vagrant_servers
+
+# define the servers spinned up with vagrant.
+
+support-server    ansible_host=172.32.128.10
+gitlab            ansible_host=172.32.128.11
+gitlab-runner-1   ansible_host=172.32.128.12
+kube-master       ansible_host=172.32.128.13
+kube-node-1       ansible_host=172.32.128.14
+
+
+[nfs]
+support-server
+
+[ldap]
+support-server
+
+[support-server:children]
+nfs
+ldap
+
+[gitlab-server]
+gitlab
+
+[gitlab-runners]
+gitlab-runner-1
+
+[gitlab-ci:children]
+gitlab-server
+gitlab-runners
+
+[masters]
+kube-master
+
+[etcd:children]
+masters
+
+[nodes]
+kube-node-1
+
+[k8s:children]
+masters
+etcd
+nodes
+
+[docker:children]
+k8s
+
+[vagrant:children]
+support-server
+gitlab-ci
+k8s
+docker
+
+[vagrant:vars]
+ansible_user='vagrant'
+ansible_private_key_file='~/.vagrant.d/insecure_private_key'
+
+[all:children]
+vagrant

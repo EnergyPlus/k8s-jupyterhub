@@ -1,0 +1,7 @@
+---
+
+- name: Create ldap service in k8s cluster
+  become: yes
+  hosts: masters
+  roles:
+    - role: k8s-jupyterhub
