@@ -1,0 +1,35 @@
+
+# This should be a class with the following form:
+#
+# - constructor takes one kwarg: `config`, the IPython config object.
+#
+# - is a tornado.gen.coroutine
+# - returns username on success, None on failure
+# - takes two arguments: (handler, data),
+#   where `handler` is the calling web.RequestHandler,
+#   and `data` is the POST form data from the login page.
+c.JupyterHub.authenticator_class = '{{ JupyterHub_auth_class }}'
+
+
+c.LDAPAuthenticator.bind_dn_template = '{{ LDAPAuth_bind_dn_template }}'
+
+# LDAP_POD_ID: Get this one from the Pod we created in the LDAP section:
+#
+#     $ kubectl get Pods
+#     NAME                               READY     STATUS    RESTARTS   AGE
+#     jupyterhub-ldap-2860785391-pjiq7   2/2       Running   0          31m
+#
+#     $ kubectl describe Pod jupyterhub-ldap-2860785391-pjiq7 | grep ip
+#     IP:         10.100.5.3
+#
+c.LDAPAuthenticator.server_address = '{ LDAP_POD_ID }'
+c.LDAPAuthenticator.server_port = {{ LDAPAuth_server_port }}
+c.LDAPAuthenticator.use_ssl = {{ LDAPAuth_use_ssl }}
+c.KubernetesSpawner.verify_ssl = {{ KubernetesSpawner_verify_ssl }}
+
+c.JupyterHub.logo_file = "{{ jupyterhub_dir_path_img }}/{{ jhub_logo }}"
+
+c.KubernetesSpawner.host = '{{ kube_host }}'
+c.KubernetesSpawner.username = '{{ kube_user }}'
+c.KubernetesSpawner.password = '{{ kube_pass }}'
+c.KubernetesSpawner.hub_ip_from_service = "{{ K8sSpawner_hub_ip_from_service }}"

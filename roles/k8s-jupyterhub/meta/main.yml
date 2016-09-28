@@ -1,0 +1,11 @@
+galaxy_info:
+  author: Adrian G Prado
+  description: Role to deploy JupyterHub service in Kubernetes
+
+  license: license (MIT)
+
+  min_ansible_version: 1.2
+
+  galaxy_tags: []
+
+dependencies: []

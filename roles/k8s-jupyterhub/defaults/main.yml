@@ -1,0 +1,58 @@
+---
+# defaults file for k8s-ldap
+
+# Variables to deploy files
+delete_jupyterhub: false
+jupyterhub_dir_path: /opt/jupyterhub
+jupyterhub_dir_path_img: "{{ jupyterhub_dir_path }}/images"
+jupyterhub_dir_path_vol: "{{ jupyterhub_dir_path }}/volumes"
+
+jhub_logo: "nrg-logo.png"
+jupyterhub_docker_vol: "jupyterhub_config.py"
+jupyterhub_k8s_file: "jupyterhub.yaml"
+
+## Template variables
+# Two options:
+#   - NodePort, if the deployment is a internal server or virutal machine.
+#   - LoadBalancer, if the deployment is on cloud.
+jupyterhub_admin_type: 'NodePort'
+
+# 'jupyterhub.auth.PAMAuthenticator'
+# 'ldapauthenticator.LDAPAuthenticator'
+JupyterHub_auth_class: 'jupyterhub.auth.PAMAuthenticator'
+
+cn_username: 'username'
+cn_group: 'jupyterhub'
+dc_group: 'example'
+dc_organization: 'org'
+LDAPAuth_bind_dn_template: 'cn={{cn_username}},cn={{ cn_group }},dc={{ dc_group }},dc={{ dc_organization }}'
+
+# LDAP_POD_ID: Get this one from the Pod we created in the LDAP section:
+#
+#     $ kubectl get Pods
+#     NAME                               READY     STATUS    RESTARTS   AGE
+#     jupyterhub-ldap-2860785391-pjiq7   2/2       Running   0          31m
+#
+#     $ kubectl describe Pod jupyterhub-ldap-2860785391-pjiq7 | grep ip
+#     IP:         10.100.5.3
+#
+LDAPAuth_server_address: 00.00.00.00
+LDAPAuth_server_port: 389
+LDAPAuth_use_ssl: false
+KubernetesSpawner_verify_ssl: false
+
+# 'kubernetes_spawner.KubernetesSpawner'
+# 'jupyterhub.spawner.LocalProcessSpawner'
+JupyterHub_spawner_class: 'jupyterhub.spawner.LocalProcessSpawner'
+
+# Get theese from kubectl config view
+# KUBE_HOST, KUBE_USER, KUBEPASS.
+kube_host: ''
+kube_user: ''
+kube_pass: ''
+K8sSpawner_hub_ip_from_service: "jupyterhub"
+
+
+LDAPAuth_allowed_groups: |
+  - 'cn=researcher,ou=groups,dc=wikimedia,dc=org'
+  - 'cn=operations,ou=groups,dc=wikimedia,dc=org'
