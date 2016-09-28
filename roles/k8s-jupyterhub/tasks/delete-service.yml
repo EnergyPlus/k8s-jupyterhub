@@ -1,0 +1,12 @@
+---
+
+- name: delete jupyterhub deployment and service
+  raw: "kubectl delete -f {{ jupyterhub_dir_path }}/{{ jupyterhub_k8s_file }}"
+  # if the services are already running avoid the error
+  ignore_errors: true
+
+- name: clean folder when delete jupyterhub paas
+  file:
+    path={{ jupyterhub_dir_path }}
+    state='absent'
+  when: "{{ delete_jupyterhub }}"

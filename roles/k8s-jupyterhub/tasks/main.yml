@@ -1,43 +1,7 @@
 ---
 
-- name: create folder structure
-  file:
-    path={{ item }}
-    state='directory'
-  with_items:
-    - '{{ jupyterhub_dir_path }}'
-    - '{{ jupyterhub_dir_path_img }}'
-    - '{{ jupyterhub_dir_path_vol }}'
-
-- name: copy image file
-  copy:
-    src="./files/img/{{ jhub_logo}}"
-    dest="{{jupyterhub_dir_path_img}}/{{ jhub_logo }}"
-
-- name: jupyterhub configure template
-  template:
-    src={{ item.src }}
-    dest={{ item.dest }}
-  with_items:
-    - src: "{{jupyterhub_docker_vol}}.jinja2"
-      dest: "{{ jupyterhub_dir_path_vol }}/{{ jupyterhub_docker_vol }}"
-    - src: "{{ jupyterhub_k8s_file }}.jinja2"
-      dest: "{{ jupyterhub_dir_path }}/{{ jupyterhub_k8s_file }}"
-
-- name: create jupyterhub deployment and service
-  raw: "kubectl create -f {{ jupyterhub_dir_path }}/{{ jupyterhub_k8s_file }}"
+- include: create-service.yml
   when: "{{ not delete_jupyterhub }}"
-  # if the services are already running avoid the error
-  ignore_errors: true
 
-- name: delete jupyterhub deployment and service
-  raw: "kubectl delete -f {{ jupyterhub_dir_path }}/{{ jupyterhub_k8s_file }}"
-  when: "{{ delete_jupyterhub }}"
-  # if the services are already running avoid the error
-  ignore_errors: true
-
-- name: clean folder when delete jupyterhub paas
-  file:
-    path={{ jupyterhub_dir_path }}
-    state='absent'
+- include: delete-service.yml
   when: "{{ delete_jupyterhub }}"
